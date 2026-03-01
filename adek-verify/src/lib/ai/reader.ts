@@ -1,16 +1,27 @@
 import { ApplicationFormData, DocumentAttachment, ReaderResult } from '../data/types';
 import { callOpenRouter, buildImageContent, buildFileContent, buildTextContent } from './openrouter';
 
-/** Strip ```json ... ``` wrappers that some models return despite json_object mode */
-function stripMarkdownJson(text: string): string {
+/** Extract valid JSON from model response, handling markdown fences, thinking output, etc. */
+function extractJson(text: string): string {
   const trimmed = text.trim();
-  if (trimmed.startsWith('```')) {
-    const firstNewline = trimmed.indexOf('\n');
-    const lastFence = trimmed.lastIndexOf('```');
-    if (lastFence > firstNewline) {
-      return trimmed.slice(firstNewline + 1, lastFence).trim();
-    }
+
+  // Try direct parse first
+  try { JSON.parse(trimmed); return trimmed; } catch {}
+
+  // Strip ```json ... ``` fences
+  const fenceMatch = trimmed.match(/```(?:json)?\s*\n?([\s\S]*?)\n?\s*```/);
+  if (fenceMatch) {
+    try { JSON.parse(fenceMatch[1].trim()); return fenceMatch[1].trim(); } catch {}
   }
+
+  // Find first { and last } - extract the JSON object
+  const firstBrace = trimmed.indexOf('{');
+  const lastBrace = trimmed.lastIndexOf('}');
+  if (firstBrace !== -1 && lastBrace > firstBrace) {
+    const candidate = trimmed.slice(firstBrace, lastBrace + 1);
+    try { JSON.parse(candidate); return candidate; } catch {}
+  }
+
   return trimmed;
 }
 
@@ -73,7 +84,7 @@ export async function runReader(
       reasoningEffort,
     });
 
-    const parsed = JSON.parse(stripMarkdownJson(response));
+    const parsed = JSON.parse(extractJson(response));
 
     return {
       model: modelId,
@@ -91,6 +102,7 @@ export async function runReader(
       extracted_data: {
         student_name_arabic: '',
         student_name_english: '',
+        nationality: '',
         date_of_birth: '',
         grade_completed: '',
         pass_fail: 'unknown',

@@ -13,6 +13,7 @@ Expected JSON structure:
   "extracted_data": {
     "student_name_arabic": "extracted Arabic name or empty string",
     "student_name_english": "extracted English name or empty string",
+    "nationality": "nationality extracted from documents",
     "date_of_birth": "YYYY-MM-DD format or empty string",
     "grade_completed": "e.g., Grade 9",
     "pass_fail": "pass" | "fail" | "unknown",

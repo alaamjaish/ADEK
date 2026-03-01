@@ -13,6 +13,7 @@ export interface StudentData {
   gender: 'male' | 'female' | '';
   dateOfBirth: string;
   age: number | null;
+  nationality: string;
   religion: 'muslim' | 'non-muslim' | '';
   registrationDate: string;
 }
@@ -112,6 +113,7 @@ export interface PipelineStep {
 export interface ExtractedData {
   student_name_arabic: string;
   student_name_english: string;
+  nationality: string;
   date_of_birth: string;
   grade_completed: string;
   pass_fail: 'pass' | 'fail' | 'unknown';

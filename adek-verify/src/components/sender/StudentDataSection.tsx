@@ -104,6 +104,16 @@ export default function StudentDataSection({ data, onChange }: Props) {
         />
       </div>
 
+      <Input
+        label="Nationality"
+        labelAr="الجنسية"
+        lang={lang}
+        value={data.nationality}
+        onChange={(e) => update('nationality', e.target.value)}
+        required
+        placeholder={t('مثال: إماراتي، مصري، هندي', 'e.g. Emirati, Egyptian, Indian')}
+      />
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <Select
           label="Religion"

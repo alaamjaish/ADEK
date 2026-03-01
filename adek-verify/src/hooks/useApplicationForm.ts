@@ -14,6 +14,7 @@ function createInitialForm(): ApplicationFormData {
       gender: '',
       dateOfBirth: '',
       age: null,
+      nationality: '',
       religion: '',
       registrationDate: new Date().toISOString().split('T')[0],
     },

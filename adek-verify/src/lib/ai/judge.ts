@@ -2,14 +2,18 @@ import { ApplicationFormData, JudgeResult, ReaderResult, ValidationCheck } from 
 import { getSchoolById } from '../data/schools';
 import { callOpenRouter, buildTextContent } from './openrouter';
 
-function stripMarkdownJson(text: string): string {
+function extractJson(text: string): string {
   const trimmed = text.trim();
-  if (trimmed.startsWith('```')) {
-    const firstNewline = trimmed.indexOf('\n');
-    const lastFence = trimmed.lastIndexOf('```');
-    if (lastFence > firstNewline) {
-      return trimmed.slice(firstNewline + 1, lastFence).trim();
-    }
+  try { JSON.parse(trimmed); return trimmed; } catch {}
+  const fenceMatch = trimmed.match(/```(?:json)?\s*\n?([\s\S]*?)\n?\s*```/);
+  if (fenceMatch) {
+    try { JSON.parse(fenceMatch[1].trim()); return fenceMatch[1].trim(); } catch {}
+  }
+  const firstBrace = trimmed.indexOf('{');
+  const lastBrace = trimmed.lastIndexOf('}');
+  if (firstBrace !== -1 && lastBrace > firstBrace) {
+    const candidate = trimmed.slice(firstBrace, lastBrace + 1);
+    try { JSON.parse(candidate); return candidate; } catch {}
   }
   return trimmed;
 }
@@ -73,7 +77,7 @@ export async function runJudge(
       temperature: 0.1,
     });
 
-    const parsed = JSON.parse(stripMarkdownJson(response));
+    const parsed = JSON.parse(extractJson(response));
 
     const checks: ValidationCheck[] = (parsed.checks || []).map((c: Record<string, string | number>) => ({
       rule: c.rule || '',

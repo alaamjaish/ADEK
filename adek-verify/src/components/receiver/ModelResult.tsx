@@ -13,6 +13,7 @@ interface Props {
 const FIELD_LABELS: Record<string, { ar: string; en: string }> = {
   student_name_arabic: { ar: 'الاسم بالعربي', en: 'Name (Arabic)' },
   student_name_english: { ar: 'الاسم بالإنجليزي', en: 'Name (English)' },
+  nationality: { ar: 'الجنسية', en: 'Nationality' },
   date_of_birth: { ar: 'تاريخ الميلاد', en: 'Date of Birth' },
   grade_completed: { ar: 'الصف المكتمل', en: 'Grade Completed' },
   pass_fail: { ar: 'نجاح / رسوب', en: 'Pass / Fail' },
@@ -46,12 +47,29 @@ export default function ModelResult({ result, index }: Props) {
     return 'text-adek-danger';
   };
 
-  const formatValue = (key: string, value: unknown): string => {
-    if (value === true) return '\u2713';
-    if (value === false) return '\u2717';
-    if (value === null || value === undefined || value === '') return '-';
-    if (typeof value === 'object') return JSON.stringify(value);
-    return String(value);
+  const formatValue = (key: string, value: unknown): { text: string; isEmpty: boolean } => {
+    if (value === true) return { text: '\u2713', isEmpty: false };
+    if (value === false) return { text: '\u2717', isEmpty: false };
+    if (value === null || value === undefined || value === '' || value === 'unknown' || value === 'none') {
+      const reasons: Record<string, { ar: string; en: string }> = {
+        student_name_arabic: { ar: 'لم يُعثر على اسم عربي في المستندات', en: 'No Arabic name found in documents' },
+        student_name_english: { ar: 'لم يُعثر على اسم إنجليزي في المستندات', en: 'No English name found in documents' },
+        nationality: { ar: 'لم تُذكر الجنسية في المستندات', en: 'Nationality not mentioned in documents' },
+        date_of_birth: { ar: 'لم يُعثر على تاريخ الميلاد', en: 'Date of birth not found' },
+        grade_completed: { ar: 'لم يُحدد الصف المكتمل', en: 'Completed grade not specified' },
+        pass_fail: { ar: 'لم تُحدد نتيجة النجاح/الرسوب', en: 'Pass/fail status not determined' },
+        school_name: { ar: 'لم يُعثر على اسم المدرسة', en: 'School name not found' },
+        transfer_clearance: { ar: 'لم تُحدد حالة الانتقال', en: 'Transfer status not determined' },
+        outstanding_obligations: { ar: 'لم تُذكر التزامات', en: 'No obligations mentioned' },
+        emirates_id_number: { ar: 'لم يُعثر على رقم الهوية', en: 'Emirates ID number not found' },
+        has_official_stamp: { ar: 'لم يُكتشف ختم رسمي', en: 'No official stamp detected' },
+        has_signature: { ar: 'لم يُكتشف توقيع', en: 'No signature detected' },
+      };
+      const reason = reasons[key];
+      return { text: reason ? (lang === 'ar' ? reason.ar : reason.en) : '-', isEmpty: true };
+    }
+    if (typeof value === 'object') return { text: JSON.stringify(value), isEmpty: false };
+    return { text: String(value), isEmpty: false };
   };
 
   if (result.error) {
@@ -109,20 +127,22 @@ export default function ModelResult({ result, index }: Props) {
               {Object.entries(result.extracted_data).map(([key, value]) => {
                 if (key === 'document_dates' || key === 'flags') return null;
                 const label = FIELD_LABELS[key];
+                const formatted = formatValue(key, value);
                 return (
                   <div key={key} className="flex items-center justify-between px-3 py-1.5 text-xs">
                     <span className="text-adek-text-secondary font-medium">
                       {label ? (lang === 'ar' ? label.ar : label.en) : key}
                     </span>
                     <span className={cn(
-                      'font-semibold max-w-[60%] text-end',
-                      value === true ? 'text-adek-success' :
-                      value === false ? 'text-adek-danger' :
-                      value === 'pass' || value === 'clear' ? 'text-adek-success' :
-                      value === 'fail' || value === 'blocked' ? 'text-adek-danger' :
-                      'text-adek-text'
+                      'max-w-[60%] text-end',
+                      formatted.isEmpty ? 'text-adek-text-secondary italic text-[11px]' :
+                      value === true ? 'font-semibold text-adek-success' :
+                      value === false ? 'font-semibold text-adek-danger' :
+                      value === 'pass' || value === 'clear' ? 'font-semibold text-adek-success' :
+                      value === 'fail' || value === 'blocked' ? 'font-semibold text-adek-danger' :
+                      'font-semibold text-adek-text'
                     )}>
-                      {formatValue(key, value)}
+                      {formatted.text}
                     </span>
                   </div>
                 );
