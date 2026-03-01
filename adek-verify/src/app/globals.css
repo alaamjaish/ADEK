@@ -1,0 +1,122 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-adek-navy: #1B4B6B;
+  --color-adek-navy-light: #2A6A8F;
+  --color-adek-gold: #C8A951;
+  --color-adek-gold-light: #D4BC72;
+  --color-adek-success: #2D8A4E;
+  --color-adek-warning: #D4A017;
+  --color-adek-danger: #C0392B;
+  --color-adek-bg: #F8F9FA;
+  --color-adek-card: #FFFFFF;
+  --color-adek-border: #E5E7EB;
+  --color-adek-text: #1F2937;
+  --color-adek-text-secondary: #6B7280;
+  --font-cairo: var(--font-cairo), "Segoe UI", Tahoma, Arial, sans-serif;
+  --font-sans: var(--font-cairo), "Segoe UI", Tahoma, Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--color-adek-bg);
+  color: var(--color-adek-text);
+  font-family: var(--font-cairo);
+  margin: 0;
+}
+
+/* RTL Support */
+[dir="rtl"] {
+  text-align: right;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes slideInRtl {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+@keyframes spin-slow {
+  to { transform: rotate(360deg); }
+}
+@keyframes score-fill {
+  from { width: 0%; }
+}
+@keyframes verdict-pop {
+  0% { transform: scale(0.8); opacity: 0; }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out;
+}
+.animate-slide-in {
+  animation: slideIn 0.4s ease-out;
+}
+[dir="rtl"] .animate-slide-in {
+  animation: slideInRtl 0.4s ease-out;
+}
+.animate-pulse-dot {
+  animation: pulse-dot 1.5s ease-in-out infinite;
+}
+.animate-spin-slow {
+  animation: spin-slow 2s linear infinite;
+}
+.animate-score-fill {
+  animation: score-fill 1s ease-out;
+}
+.animate-verdict-pop {
+  animation: verdict-pop 0.5s ease-out;
+}
+
+/* File drop zone */
+.drop-zone-active {
+  border-color: var(--color-adek-navy) !important;
+  background-color: rgba(27, 75, 107, 0.05) !important;
+}
+
+/* Pipeline step connector line */
+.pipeline-connector {
+  position: absolute;
+  right: 19px;
+  top: 40px;
+  bottom: 0;
+  width: 2px;
+  background: #E5E7EB;
+}
+[dir="ltr"] .pipeline-connector {
+  left: 19px;
+  right: auto;
+}
+
+/* Score bar animation */
+.score-bar {
+  transition: width 1s ease-out;
+}
