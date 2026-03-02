@@ -1,8 +1,11 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { useLang } from '@/app/layout';
 import Input from '@/components/ui/Input';
 import { GuardianData } from '@/lib/data/types';
+
+const MapPicker = dynamic(() => import('@/components/ui/MapPicker'), { ssr: false });
 
 interface Props {
   data: GuardianData;
@@ -14,6 +17,10 @@ export default function GuardianDataSection({ data, onChange }: Props) {
 
   const update = (field: keyof GuardianData, value: string) => {
     onChange({ ...data, [field]: value });
+  };
+
+  const handleLocationChange = (lat: number, lng: number, address: string) => {
+    onChange({ ...data, address, addressLat: lat, addressLng: lng });
   };
 
   return (
@@ -78,13 +85,12 @@ export default function GuardianDataSection({ data, onChange }: Props) {
         />
       </div>
 
-      <Input
-        label="Address"
-        labelAr="العنوان"
+      <MapPicker
+        lat={data.addressLat}
+        lng={data.addressLng}
+        address={data.address}
         lang={lang}
-        value={data.address}
-        onChange={(e) => update('address', e.target.value)}
-        placeholder={t('العنوان الكامل', 'Full address')}
+        onLocationChange={handleLocationChange}
       />
     </div>
   );

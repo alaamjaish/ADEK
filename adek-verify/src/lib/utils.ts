@@ -8,6 +8,11 @@ export function generateApplicationNumber(): string {
   return `ADK-${year}-${seq}`;
 }
 
+export function generateESISNumber(): string {
+  const seq = Math.floor(1000000000 + Math.random() * 9000000000);
+  return `ESIS-${seq}`;
+}
+
 export function calculateAge(dob: string): number | null {
   if (!dob) return null;
   const birth = new Date(dob);

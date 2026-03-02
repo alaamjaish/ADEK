@@ -26,6 +26,23 @@ export default function Header() {
 
         {/* Actions */}
         <div className="flex items-center gap-3">
+          {/* Home Link */}
+          <Link
+            href="/"
+            className="px-3 py-1.5 text-sm rounded-md hover:bg-white/10 transition-colors"
+          >
+            {t('الرئيسية', 'Home')}
+          </Link>
+
+          {/* Testing Link */}
+          <Link
+            href="/testing"
+            className="px-3 py-1.5 text-sm rounded-md border border-adek-gold/30 text-adek-gold hover:bg-adek-gold/10 transition-colors"
+            title={t('اختبار النماذج', 'Model Testing')}
+          >
+            {t('اختبار', 'Testing')}
+          </Link>
+
           {/* Language Toggle */}
           <button
             onClick={() => setLang(lang === 'ar' ? 'en' : 'ar')}

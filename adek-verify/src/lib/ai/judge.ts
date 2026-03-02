@@ -2,18 +2,52 @@ import { ApplicationFormData, JudgeResult, ReaderResult, ValidationCheck } from 
 import { getSchoolById } from '../data/schools';
 import { callOpenRouter, buildTextContent } from './openrouter';
 
+/** Attempt to repair truncated JSON by closing open strings, arrays, objects */
+function repairJson(text: string): string {
+  let s = text.trim();
+  // Close any unterminated string
+  const quoteCount = (s.match(/(?<!\\)"/g) || []).length;
+  if (quoteCount % 2 !== 0) s += '"';
+  // Close open arrays and objects
+  const opens: string[] = [];
+  let inString = false;
+  let escape = false;
+  for (const ch of s) {
+    if (escape) { escape = false; continue; }
+    if (ch === '\\') { escape = true; continue; }
+    if (ch === '"') { inString = !inString; continue; }
+    if (inString) continue;
+    if (ch === '{' || ch === '[') opens.push(ch);
+    if (ch === '}' || ch === ']') opens.pop();
+  }
+  while (opens.length > 0) {
+    const open = opens.pop();
+    s += open === '{' ? '}' : ']';
+  }
+  return s;
+}
+
 function extractJson(text: string): string {
   const trimmed = text.trim();
   try { JSON.parse(trimmed); return trimmed; } catch {}
-  const fenceMatch = trimmed.match(/```(?:json)?\s*\n?([\s\S]*?)\n?\s*```/);
+  // Strip ```json ... ``` fences (greedy to capture full content between outermost fences)
+  const fenceMatch = trimmed.match(/```(?:json)?\s*\n?([\s\S]+)\n?\s*```\s*$/);
   if (fenceMatch) {
-    try { JSON.parse(fenceMatch[1].trim()); return fenceMatch[1].trim(); } catch {}
+    const inner = fenceMatch[1].trim();
+    try { JSON.parse(inner); return inner; } catch {}
   }
+  // Find first { and last } - extract the JSON object
   const firstBrace = trimmed.indexOf('{');
   const lastBrace = trimmed.lastIndexOf('}');
   if (firstBrace !== -1 && lastBrace > firstBrace) {
     const candidate = trimmed.slice(firstBrace, lastBrace + 1);
     try { JSON.parse(candidate); return candidate; } catch {}
+  }
+  // Last resort: try to repair truncated JSON
+  if (firstBrace !== -1) {
+    const raw = trimmed.slice(firstBrace);
+    const repaired = repairJson(raw);
+    try { JSON.parse(repaired); return repaired; } catch {}
   }
   return trimmed;
 }
@@ -73,7 +107,7 @@ export async function runJudge(
     prompt = prompt.replace('{{SCHOOL_DATA}}', schoolDataStr);
 
     const response = await callOpenRouter(apiKey, modelId, prompt, [buildTextContent('Analyze the reader results and produce your final verdict.')], {
-      maxTokens: 4096,
+      maxTokens: 16384,
       temperature: 0.1,
     });
 

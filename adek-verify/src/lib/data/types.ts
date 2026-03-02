@@ -32,6 +32,8 @@ export interface GuardianData {
   email: string;
   idExpiryDate: string;
   address: string;
+  addressLat: number | null;
+  addressLng: number | null;
 }
 
 export interface DocumentAttachment {
@@ -61,11 +63,11 @@ export interface DocumentTypeInfo {
 }
 
 export const DOCUMENT_TYPES: DocumentTypeInfo[] = [
-  { type: 'emirates_id', labelAr: 'الهوية الإماراتية', labelEn: 'Emirates ID', required: true, conditionalNote: 'or Proof of No ID' },
+  { type: 'proof_no_id', labelAr: 'إثبات عدم وجود الهوية', labelEn: 'Proof of No ID', required: false, conditionalNote: 'If uploaded, Emirates ID is skipped' },
+  { type: 'emirates_id', labelAr: 'الهوية الإماراتية', labelEn: 'Emirates ID', required: true, conditionalNote: 'Skipped if Proof of No ID is uploaded' },
   { type: 'transfer_certificate', labelAr: 'شهادة الانتقال / الترك', labelEn: 'Transfer Certificate', required: true },
   { type: 'previous_year_certificate', labelAr: 'شهادة السنة السابقة', labelEn: 'Previous Year Certificate', required: true },
   { type: 'passport', labelAr: 'جواز السفر', labelEn: 'Passport', required: true },
-  { type: 'proof_no_id', labelAr: 'إثبات عدم وجود الهوية', labelEn: 'Proof of No ID', required: false, conditionalNote: 'Only if no Emirates ID' },
 ];
 
 export interface ApplicationFormData {
@@ -211,4 +213,52 @@ export interface AppSettings {
 export interface BilingualText {
   ar: string;
   en: string;
+}
+
+// --- Testing Page Types ---
+
+export interface TestTemplate {
+  id: string;
+  name: string;
+  createdAt: string;
+  documents: Array<{
+    type: DocumentType;
+    fileName: string;
+    fileSize: number;
+    base64: string;
+    mimeType: string;
+    preview: string;
+  }>;
+}
+
+export interface TestExtractedData {
+  student_name_arabic: string;
+  student_name_english: string;
+  nationality: string;
+  date_of_birth: string;
+  grade_completed: string;
+  pass_fail: string;
+  school_name: string;
+  transfer_clearance: string;
+  outstanding_obligations: string;
+  emirates_id_number: string;
+  has_official_stamp: boolean;
+  has_signature: boolean;
+  document_dates: Record<string, string>;
+  flags: string[];
+}
+
+export type TestModelStatus = 'idle' | 'running' | 'complete' | 'error';
+
+export interface TestModelResult {
+  modelId: string;
+  modelName: string;
+  status: TestModelStatus;
+  confidence: 'high' | 'medium' | 'low' | '';
+  extracted_data: TestExtractedData | null;
+  phase: 1 | 2;
+  error?: string;
+  raw_response?: string;
+  startTime?: number;
+  endTime?: number;
 }

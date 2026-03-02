@@ -34,8 +34,8 @@ export default function StudentDataSection({ data, onChange }: Props) {
           labelAr="رقم الطالب"
           lang={lang}
           value={data.esisNumber}
-          onChange={(e) => update('esisNumber', e.target.value)}
-          placeholder={t('أدخل رقم eSIS', 'Enter eSIS number')}
+          readOnly
+          className="bg-gray-50"
         />
         <Input
           label="Application Number"

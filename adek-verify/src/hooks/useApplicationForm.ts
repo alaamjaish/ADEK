@@ -2,12 +2,12 @@
 
 import { useState, useCallback } from 'react';
 import { ApplicationFormData, StudentData, AdmissionData, GuardianData, DocumentAttachment } from '@/lib/data/types';
-import { generateApplicationNumber } from '@/lib/utils';
+import { generateApplicationNumber, generateESISNumber } from '@/lib/utils';
 
 function createInitialForm(): ApplicationFormData {
   return {
     student: {
-      esisNumber: '',
+      esisNumber: generateESISNumber(),
       applicationNumber: generateApplicationNumber(),
       studentNameArabic: '',
       studentNameEnglish: '',
@@ -31,6 +31,8 @@ function createInitialForm(): ApplicationFormData {
       email: '',
       idExpiryDate: '',
       address: '',
+      addressLat: null,
+      addressLng: null,
     },
     documents: [],
   };

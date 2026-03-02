@@ -52,14 +52,17 @@ export default function DocumentUpload({ documents, onChange, hasEmiratesId }: P
 
       <div className="space-y-3">
         {DOCUMENT_TYPES.map((docType) => {
-          // Skip proof_no_id if emirates_id is uploaded
-          if (docType.type === 'proof_no_id' && hasEmiratesId) return null;
-          // Skip emirates_id required indicator if proof_no_id is uploaded
           const hasProof = documents.some(d => d.type === 'proof_no_id' && d.base64);
+
+          // Skip emirates_id entirely if proof_no_id is uploaded
+          if (docType.type === 'emirates_id' && hasProof) return null;
+          // Hide proof_no_id option if emirates_id is already uploaded
+          if (docType.type === 'proof_no_id' && hasEmiratesId) return null;
+
           const isRequired = docType.type === 'emirates_id'
             ? !hasProof
             : docType.type === 'proof_no_id'
-              ? !hasEmiratesId
+              ? false
               : docType.required;
 
           return (

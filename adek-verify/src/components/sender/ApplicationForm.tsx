@@ -2,6 +2,7 @@
 
 import { useLang } from '@/app/layout';
 import Button from '@/components/ui/Button';
+import TemplateBar from './TemplateBar';
 import StudentDataSection from './StudentDataSection';
 import AdmissionDataSection from './AdmissionDataSection';
 import GuardianDataSection from './GuardianDataSection';
@@ -34,9 +35,9 @@ export default function ApplicationForm({ formData, onFormChange, onSubmit, isPr
     formData.documents.filter(d => d.base64).length >= 2;
 
   return (
-    <div className="p-6">
+    <div className="pb-6">
       {/* Panel header */}
-      <div className="mb-6 flex items-center gap-3">
+      <div className="mb-6 px-6 pt-6 flex items-center gap-3">
         <div className="w-8 h-8 rounded-full bg-adek-gold/20 flex items-center justify-center">
           <svg className="w-4 h-4 text-adek-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
@@ -52,8 +53,11 @@ export default function ApplicationForm({ formData, onFormChange, onSubmit, isPr
         </div>
       </div>
 
+      {/* Template bar for quick testing */}
+      <TemplateBar formData={formData} onFill={onFormChange} />
+
       {/* Form sections */}
-      <div className="space-y-6">
+      <div className="space-y-6 px-6 mt-4">
         <StudentDataSection
           data={formData.student}
           onChange={(student) => onFormChange({ ...formData, student })}
