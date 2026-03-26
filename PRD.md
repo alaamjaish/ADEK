@@ -467,6 +467,20 @@ interface VerificationCheck {
 
 ---
 
+شو هوو التطبيق
+مكونات وصفحات التطبيق
+العدة التقنية
+
+1- اللغة البرمجية
+
+
+
+
+
+
+
+
+
 ## 8. SUCCESS CRITERIA
 
 The demo is successful if:
